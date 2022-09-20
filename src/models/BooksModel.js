@@ -9,12 +9,10 @@ const bookSchema = new mongoose.Schema(
             required: true,
             unique: true
         },
-
         excerpt: {
             type: String,
             required: true
         },
-
         userId: {
             type: ObjectId,
             ref: "User",

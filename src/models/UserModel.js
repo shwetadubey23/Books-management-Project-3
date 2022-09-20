@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        enum: [Mr, Mrs, Miss]
+        enum: ["Mr", "Mrs", "Miss"]
     },
     name: {
         type: String,
@@ -30,5 +30,6 @@ const userSchema = new mongoose.Schema({
         pincode: { type: String }
     },
 
-}, { timestamp: true })
+}, { timestamps: true })
 
+module.exports = mongoose.model('NewUser', userSchema)
