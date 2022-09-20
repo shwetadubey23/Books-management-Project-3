@@ -10,7 +10,7 @@ const createUser = async function(req, res) {
 
     // checking all the required fields are present or not(sending error msg according to that)
         if (!title) return res.status(400).send({ status: false, msg: "title is mandatory" })
-        if(title != ("Mr"|| "Mrs"|| "Miss")) return res.status(400).send({ status: false, msg: "give title only ['Mr'/ 'Mrs'/'Miss']" });
+        if((title !== "Mr" && title !== "Mrs" && title !== "Miss")) return res.status(400).send({ status: false, msg: "give title only ['Mr'/ 'Mrs'/'Miss']" });
 
         if (!name) return res.status(400).send({ status: false, msg: "name is mandatory" })
         if (!email) return res.status(400).send({ status: false, msg: "email is mandatory" })
