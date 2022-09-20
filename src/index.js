@@ -6,7 +6,7 @@ const mongoose = require("mongoose")
 
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({extended:true}))
-mongoose.connect("", {
+mongoose.connect("mongodb+srv://Deepanshuyadav:DEEPyadav1446@cluster0.f9r26yw.mongodb.net/group-19-Database", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
