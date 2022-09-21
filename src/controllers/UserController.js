@@ -6,14 +6,14 @@ let today = new Date(timeElapsed);
 
 
 
-const createUser = async function (req, res) {
+const createUser = async function  (req, res) {
     try {
         let data = req.body
         let { title, name, email, phone, password } = data
 
-        // checking all the required fields are present or not(sending error msg according to that)
+            // checking all the required fields are present or not(sending error msg according to that)
         if (!title) return res.status(400).send({ status: false, msg: "title is mandatory" })
-        if ((title !== "Mr" && title !== "Mrs" && title !== "Miss")) return res.status(400).send({ status: false, msg: "give title only ['Mr'/ 'Mrs'/'Miss']" });
+        if  ((title !== "Mr" && title !== "Mrs" && title !== "Miss")) return res.status(400).send({ status: false, msg: "give title only ['Mr'/ 'Mrs'/'Miss']" });
 
         if (!name) return res.status(400).send({ status: false, msg: "name is mandatory" })
         if (!email) return res.status(400).send({ status: false, msg: "email is mandatory" })
@@ -38,8 +38,8 @@ const createUser = async function (req, res) {
         if (findnumber.length > 0) return res.status(400).send({ status: false, msg: "mobile no. is already exist" })
         if (findemail.length > 0) return res.status(400).send({ status: false, msg: "email id is already exist" })
 
-        let saveData = await userModel.create(data)
-        res.status(200).send({ status: true, msg: saveData })
+            let saveData = await userModel.create(data)
+            res.status(200).send({  status: true, msg: saveData  })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message });
     }
