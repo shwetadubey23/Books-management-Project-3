@@ -6,6 +6,7 @@ const BooksController = require('../controllers/BooksController');
 
 
 router.post('/register',UserController.createUser)
+router.post('/books',BooksController.createBooks)
 
 router.get('/books/:bookId',BooksController.getBooksById)
 
