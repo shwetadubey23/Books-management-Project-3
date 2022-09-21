@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Schema.Types.ObjectId;
+const objectId = mongoose.Schema.Types.ObjectId;
 
 
 const bookSchema = new mongoose.Schema(
@@ -14,8 +14,8 @@ const bookSchema = new mongoose.Schema(
             required: true
         },
         userId: {
-            type: ObjectId,
-            ref: "User",
+            type: objectId,
+            ref: "NewUser",
             required: true
         },
 
