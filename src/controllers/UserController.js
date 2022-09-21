@@ -58,7 +58,7 @@ const login = async function (req, res) {
 
     let token = jwt.sign({ email: userData.email }, "Book management secret key", { expiresIn: "4h" });
     res.setHeader("secret-key", token);
-    return res.status(200).send({ status: true, data: { token: token} })
+    return res.status(200).send({ status: true, data: { token : token} })
 }
 
 module.exports = { createUser, login }
