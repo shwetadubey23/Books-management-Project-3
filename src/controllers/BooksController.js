@@ -68,9 +68,10 @@ const getBooksById = async function(req,res){
     try{
         let bookId = req.params.bookId
         if(!bookId) return res.status(400).send({status: false, msg: "bookId required in params"})
-       let allBooks = await BooksModel.findById(bookId).lean()
-       if(!allBooks.length == 0) return res.status(404).send({status: false, msg: "No Books found"})
-       allBooks.reviewsData = await ReviewModel.find(reviewsData)
+       let allBooks = await BooksModel.findById({_id: bookId}).lean()//{isDeleted: false}]}).lean()
+       if(allBooks.isDeleted == true) return res.status(404).send({status: false, msg: "No Books found"})
+       let reviewData = await ReviewModel.findById(bookId)
+       allBooks["reviewsData"] = [reviewData ]
        res.status(200).send({status: true, data: allBooks})
     }
     catch(err){
@@ -79,5 +80,49 @@ const getBooksById = async function(req,res){
 }
 
 
+//=======================BooksDeleteById========================================
+
+const BooksDeleteById = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+        if (!bookId) return res.status(400).send({ status: false, msg: "bookId required in params" })
+        if (!(/^[a-f\d]{24}$/i).test(bookId)) { return res.status(400).send({ status: false, message: "Please enter Correct bookId." }) }
+
+        let isdelete = await BooksModel.findById({ _id: bookId}) //isDeleted: true })
+        if (isdelete.isDeleted == true) return res.status(404).send({ status: false, msg: "book is already deleted" })
+        let checkData = await BooksModel.findByIdAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true });
+        res.status(200).send({ status: true, msg: "Document deleted Successfully" });
+
+        if (!checkData) return res.status(404).send({ status: false, msg: "NO Books found" })
+        //   let bookForDelete = await BooksModel.updateMany({ $and: [bookId, { isDeleted: false}], 
+    }
+    catch (err) {
+        res.status(500).send({ msg: err.message });
+    }
+}
+
+
+// const BooksDeleteById = async function (req,res){
+//     try{
+//       let bookId = req.params.bookId
+//       if(!bookId) return res.status(400).send({status: false, msg: "bookId required in params"})
+//       if (!(/^[a-f\d]{24}$/i).test(bookId)) { return res.status(400).send({ status: false, message: "Please enter Correct bookId." }) }
+
+//       const checkData = await BooksModel.findById({_id: bookId})
+//       if(!checkData.length == 0) return res.status(404).send({status: false, msg: "NO Books found"})
+//       let bookForDelete = await BooksModel.updateMany({ $and: [bookId, { isDeleted: false}], $set: {isDeleted: true, deletedAt: Date.now()}}, { new: true});
+//       if(bookForDelete.isDeleted == true) return res.status(404).send({status: false, msg: "Book already deleted "})
+    
+//       res.status(200).send({status: true, msg: "Document deleted Successfully"});
+//     }
+//     catch(err){
+//         res.status(500).send({msg: err.message});
+//     }
+// }
+
+
+
+
 module.exports.createBooks = createBooks
 module.exports.getBooksById = getBooksById
+module.exports.BooksDeleteById = BooksDeleteById
