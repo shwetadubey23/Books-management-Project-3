@@ -7,6 +7,10 @@ router.post('/books',BooksControler.createBooks)
 router.post('/register',UserControler.createUser)
 router.post('/login',UserControler.login)
 router.get("/books",BooksControler.getBookDetails)
+router.get("/books/:bookId",BooksControler.getBooksById)
+router.delete("/books/:bookId",BooksControler.BooksDeleteById)
+
+
 
 
 
