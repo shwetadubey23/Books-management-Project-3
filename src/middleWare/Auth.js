@@ -5,8 +5,6 @@ const bookModel = require("../models/BooksModel");
 const userModel= require("../models/UserModel")
 
 
-
-
 // ============================================ AUTHENTICATION ==============================================//
 
 const authentication = (req, res, next) => {
@@ -62,8 +60,6 @@ const authorisationbyBId = async function(req,res,next){
     try {
         let bookId = req.params.bookId
         let decodedtoken=req.token
-        // if(!bookId){
-        //    return res.status(400).send({status: false, message: "Please enter a book ID."}); }
         if(!mongoose.Types.ObjectId.isValid(bookId)){
            return res.status(400).send({status: false, message: 'Invalid book id'}); }
 
@@ -85,3 +81,14 @@ const authorisationbyBId = async function(req,res,next){
 
 // =======================================================================================================//
 module.exports={authentication,authorisation,authorisationbyBId}
+
+
+
+
+
+
+
+
+
+
+
