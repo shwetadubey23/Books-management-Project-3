@@ -37,14 +37,14 @@ const createBooks = async function (req, res) {
         let userData = await userModel.findById(userId);
         if (!userData) return res.status(404).send({ status: false, msg: "UserID not found." });
 
-        if (!( /^(?=(?:\D*\d){13}(?:(?:\D*\d){})?$)[\d-]+$/).test(ISBN)) 
-             return res.status(400).send({ status: false, message: "Please enter Correct ISBN." }) 
+        if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){})?$)[\d-]+$/).test(ISBN))
+            return res.status(400).send({ status: false, message: "Please enter Correct ISBN." })
         let checkUnique = await BooksModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
         if (checkUnique) {
             if (title === checkUnique.title) {
                 return res.status(400).send({ status: false, message: "title already exist, please give another one" });
             }
-            else {
+            else{
                 return res.status(400).send({ status: false, message: "isbn already exist, please give another one" });
             }
         }
@@ -65,7 +65,8 @@ const getBooksById = async function (req, res) {
         if (!ObjectId.isValid(bookId)) return res.status(400).send({ status: false, msg: "Please give a Valid bookId " })
 
         let allBooks = await BooksModel.findById({ _id: bookId }).lean()//{isDeleted: false}]}).lean()
-        if (allBooks.isDeleted == true) return res.status(404).send({ status: false, msg: "No Books found" })
+        if (allBooks.isDeleted == true)
+            return res.status(404).send({ status: false, msg: "No Books found" })
         let reviewData = await ReviewModel.findById(bookId)
         allBooks["reviewsData"] = [reviewData]
         res.status(200).send({ status: true, data: allBooks })
@@ -86,16 +87,18 @@ const updateBookById = async function (req, res) {
 
         let checkId = await BooksModel.findById(bookId)
         if (!checkId) return res.status(404).send({ status: false, msg: "No Books found" })
-        if (checkId.isDeleted == true) return res.status(404).send({ status: false, msg: "book is already deleted" })
+        if (checkId.isDeleted == true)
+            return res.status(404).send({ status: false, msg: "book is already deleted" })
 
         let details = req.body
         if (Object.keys(details.length) == 0) return res.status(400).send({ status: false, msg: "Please give Details in body" })
         let checkDatainDb = await BooksModel.findOne({ title: details.title })
         if (checkDatainDb) return res.status(400).send({ status: false, msg: "title is already used" })
         let bookIsbnInDb = await BooksModel.findOne({ ISBN: details.ISBN })
-        if (bookIsbnInDb) return res.status(400).send({ status: false, msg: "ISBN is already used" })
-        if (!( /^(?=(?:\D*\d){13}(?:(?:\D*\d){})?$)[\d-]+$/).test(details.ISBN)) 
-             return res.status(400).send({ status: false, message: "Please enter Correct ISBN." }) 
+        if (bookIsbnInDb)
+            return res.status(400).send({ status: false, msg: "ISBN is already used" })
+        if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){})?$)[\d-]+$/).test(details.ISBN))
+            return res.status(400).send({ status: false, message: "Please enter Correct ISBN." })
 
         const updatedBook = await BooksModel.findOneAndUpdate({ _id: bookId },
             { $set: { title: details.title, excerpt: details.excerpt, releasedAt: details.releasedAt, ISBN: details.ISBN } },
@@ -119,7 +122,8 @@ const BooksDeleteById = async function (req, res) {
         if (!ObjectId.isValid(bookId)) return res.status(400).send({ status: false, msg: "Please give a Valid bookId " })
 
         let isdelete = await BooksModel.findById({ _id: bookId }) //isDeleted: true })
-        if (isdelete.isDeleted == true) return res.status(404).send({ status: false, msg: "book is already deleted" })
+        if (isdelete.isDeleted == true)
+            return res.status(404).send({ status: false, msg: "book is already deleted" })
         let checkData = await BooksModel.findByIdAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true });
         res.status(200).send({ status: true, msg: "Document deleted Successfully" });
 

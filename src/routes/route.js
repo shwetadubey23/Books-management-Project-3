@@ -14,6 +14,7 @@ router.get('/books/:bookId',BooksController.getBooksById)
 router.delete('/books/:bookId',BooksController.BooksDeleteById)
 
 router.post('/books/:bookId/review',ReviewController.createReview)
+router.put('/books/:bookId/review/:reviewId',ReviewController.updateReview)
 router.delete('/books/:bookId/review/:reviewId',ReviewController.deleteReview)
 
 router.all("/*",(req,res)=>{
