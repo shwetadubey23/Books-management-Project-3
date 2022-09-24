@@ -25,7 +25,7 @@ const createUser = async function  (req, res) {
         return res.status(400).send({ status: false, msg: "please enter a valid name" })
         if (!validatePhone) return res.status(400).send({ status: false, msg: "Please enter valid Phone Number" })
         if (!validateEmail) return res.status(400).send({ status: false, msg: "Email is invalid, Please check your Email address" });
-        if (!validatePassword) return res.status(400).send({ status: false, msg: "use a strong password at least =>  one special, one Uppercase, one lowercase (character) one numericValue and password must be eight characters or longer)" });
+        if (!validatePassword) return res.status(400).send({ status: false, msg: "use a strong password at least =>  one special, one Uppercase, one lowercase (character) one numericValue and password must be eight characters or longer)"});
 
         //PhoneNumber and emailId should be unique
         let findnumber = await userModel.find({ phone: phone })
@@ -38,11 +38,12 @@ const createUser = async function  (req, res) {
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message });
     }
-}
+
 //====================================LOGIN======================================================//
 
 
 const login = async function (req, res) {
+    try{
     let email = req.body.email;
     let password = req.body.password;
     if (!email)
@@ -59,6 +60,9 @@ const login = async function (req, res) {
     let token = jwt.sign({ email: userData.email }, "Book management secret key", { expiresIn: "4h" });
     res.setHeader("secret-key", token);
     return res.status(200).send({ status: true, data: { token : token} })
+}
+catch{
+    
 }
 
 module.exports = { createUser, login }
