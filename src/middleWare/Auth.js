@@ -1,19 +1,20 @@
+
 const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose')
 const bookModel = require("../models/BooksModel");
 const userModel= require("../models/UserModel")
 
-const mongooseIdcheck = ()=>{
-     return mongoose.Types.ObjectId.isValid()
+// const mongooseIdcheck = ()=>{
+//      return mongoose.Types.ObjectId.isValid()
 
-}
+// }
 
 
 // ============================================ AUTHENTICATION ==============================================//
 
 const authentication = (req, res, next) => {
     try {
-        let token = req.headers["secret-key"];
+        let token = req.headers["x-api-key"];
         if (!token)
             return res.status(400).send({ status: false, msg: "token is required" });
         jwt.verify(token, "Book management secret key", function (error, decoded) {
@@ -38,7 +39,7 @@ const authentication = (req, res, next) => {
     try {
         let decodedtoken=req.token
         let userId = req.body.userId;
-     if (!mongooseIdcheck(userId)) 
+     if (!mongoose.Types.ObjectId.isValid(userId)) 
      { return res.status(400).send({ status: false, msg: "Enter valid user Id"}); }  
       let user = await userModel.findById(userId);
     if (!user) {
@@ -65,7 +66,7 @@ const authorisationbyBId = async function(req,res,next){
         let decodedtoken=req.token
         // if(!bookId){
         //    return res.status(400).send({status: false, message: "Please enter a book ID."}); }
-        if(!mongooseIdcheck(bookId)){
+        if(mongoose.Types.ObjectId.isValid(bookId)){
            return res.status(400).send({status: false, message: 'Invalid book id'}); }
 
         let bookData = await bookModel.findOne({_id:bookId,isDeleted:false})

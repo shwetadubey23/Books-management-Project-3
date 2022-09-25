@@ -1,10 +1,8 @@
 const BooksModel = require('../models/BooksModel')
-const userModel = require('../models/userModel');
+const userModel = require('../models/UserModel');
 const ObjectId = require('mongoose').Types.ObjectId
 
 const ReviewModel = require('../models/ReviewModel')
-const ReviewController = require('../controllers/ReviewController')
-
 
 
 
@@ -24,27 +22,34 @@ const createBooks = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please enter  title" });
         if (!(excerpt))
             return res.status(400).send({ status: false, message: "Please enter  excerpt" });
+        if (!(userId))
+            return res.status(400).send({ status: false, message: "Please enter  userId" });
+
         if (!(ISBN))
             return res.status(400).send({ status: false, message: "Please enter  ISBN" });
         if (!(category))
             return res.status(400).send({ status: false, message: "Please enter  category" });
         if (!(subcategory))
             return res.status(400).send({ status: false, message: "Please enter  subcategory" });
-        if (!releasedAt)
+        if (!releasedAt) {
             return res.status(400).send({ status: false, message: "Please enter  releasedAt" });
-
+        }
         if (!(/^[a-f\d]{24}$/i).test(userId)) { return res.status(400).send({ status: false, message: "Please enter Correct userId." }) }
         let userData = await userModel.findById(userId);
         if (!userData) return res.status(404).send({ status: false, msg: "UserID not found." });
 
         if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){})?$)[\d-]+$/).test(ISBN))
             return res.status(400).send({ status: false, message: "Please enter Correct ISBN." })
+
+        if (!(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/).test(releasedAt))
+            return res.status(400).send({ status: false, message: "Please enter valid releasedAt Date format('YYYY-MM-DD')" });
+
         let checkUnique = await BooksModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
         if (checkUnique) {
             if (title === checkUnique.title) {
                 return res.status(400).send({ status: false, message: "title already exist, please give another one" });
             }
-            else{
+            else {
                 return res.status(400).send({ status: false, message: "isbn already exist, please give another one" });
             }
         }
@@ -56,7 +61,23 @@ const createBooks = async function (req, res) {
     }
 }
 
-//=====================GetAllBooksById========================================
+
+//=========================Get All Books===========================================
+
+const getBooks = async function(req, res) {
+    try {
+        let queries = req.query;
+        console.log(queries)
+        let allBooks = await BooksModel.find({ $and: [queries, { isDeleted: false }] }).select({ title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 });
+        if (allBooks.length == 0) return res.status(404).send({ status: false, msg: "No book found" });;
+        return res.status(200).send({ status: true, data: allBooks });
+    } catch (error) {
+        res.status(500).send({ status: false, error: error.message });
+    }
+}
+
+
+//=====================GetAllBooksById===================================================
 
 const getBooksById = async function (req, res) {
     try {
@@ -141,6 +162,7 @@ const BooksDeleteById = async function (req, res) {
 
 
 module.exports.createBooks = createBooks
+module.exports.getBooks  =  getBooks
 module.exports.getBooksById = getBooksById
 module.exports.updateBookById = updateBookById
 module.exports.BooksDeleteById = BooksDeleteById
