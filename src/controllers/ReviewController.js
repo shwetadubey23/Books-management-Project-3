@@ -1,7 +1,7 @@
 const ReviewModel = require("../models/ReviewModel");
 const BooksModel = require('../models/BooksModel')
 const ObjectId = require('mongoose').Types.ObjectId
-
+const moment = require('moment')
 
 
 //=================================Review APIs____ Createing a review==========================
@@ -19,23 +19,19 @@ const createReview = async function (req, res) {
         if (Object.keys(reviewData).length == 0) return res.status(400).send({ status: false, msg: "Please give Details in body" })
 
         let { bookId, reviewedBy, reviewedAt, rating } = reviewData
-        if (!bookId)
-            return res.status(400).send({ status: false, message: "Please enter  BookId" });
-        //if(!reviewedBy)
-        //   return res.status(400).send({ status: false, message: "Please enter  reviewer's Name" });
-        if (!reviewedAt)
-            return res.status(400).send({ status: false, message: "Please enter  reviewedAt" });
+        reviewData.bookId= book_Id
+        reviewData.reviewedAt= moment()
         if (!rating) {
             return res.status(400).send({ status: false, message: "Please enter  rating" });
         }
         if (!(/^([1-5]|1[5])$/).test(rating)) {
             return res.status(400).send({ status: false, message: "Please give rating only 1-5 ." })
         }
-        let createdReivew = await ReviewModel.create(reviewData)
-        let reviewId = createdReivew._id
+        await ReviewModel.create(reviewData)
+    
 
-        await BooksModel.findOneAndUpdate({ _id: book_Id }, { $inc: { reviews: +1 } })
-        let updatedBookReview = await ReviewModel.findOne({ _id: reviewId }).populate("bookId")
+        await BooksModel.findByIdAndUpdate(book_Id, { $inc: { reviews: +1 } })
+        let updatedBookReview = await ReviewModel.findOne(reviewData).populate("bookId").select({createdAt:0,updatedAt:0,__v:0})
 
         return res.status(201).send({ status: true, message: 'Success', data: updatedBookReview });
 
@@ -70,7 +66,10 @@ const updateReview = async function (req, res) {
             return res.status(404).send({ status: false, msg: "Review not exist" })
 
         let reviewDetail = req.body
-        let {reviewedBy, rating, review} = reviewDetail
+        let {reviewedBy, rating} = reviewDetail
+        if(reviewedBy || reviewedBy == null ){
+            if(!(/^[a-zA-Z]+([\s][a-zA-Z]+)*$/.test(reviewedBy))) return res.status(400).send({ status: false, msg: "please update with correct name" })
+        }
         if(rating){
         if (!(/^([1-5]|1[5])$/).test(rating))
         return res.status(400).send({ status: false, message: "Please give rating only 1-5 ." })
