@@ -14,9 +14,6 @@ const createBooks = async function (req, res) {
         let data = req.body
         let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data
 
-        // if (!(title && excerpt && userId && ISBN && category && subcategory && releasedAt))
-        //     return res.status(400).send({ status: false, msg: "Please fill the Mandatory Fields." });
-
         if (!(title))
             return res.status(400).send({ status: false, message: "Please enter  title" });
         if (!(excerpt))
