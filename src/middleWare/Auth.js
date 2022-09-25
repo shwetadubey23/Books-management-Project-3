@@ -1,19 +1,15 @@
+
 const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose')
 const bookModel = require("../models/BooksModel");
 const userModel= require("../models/UserModel")
-
-const mongooseIdcheck = ()=>{
-     return mongoose.Types.ObjectId.isValid()
-
-}
 
 
 // ============================================ AUTHENTICATION ==============================================//
 
 const authentication = (req, res, next) => {
     try {
-        let token = req.headers["secret-key"];
+        let token = req.headers["x-api-key"];
         if (!token)
             return res.status(400).send({ status: false, msg: "token is required" });
         jwt.verify(token, "Book management secret key", function (error, decoded) {
@@ -38,7 +34,7 @@ const authentication = (req, res, next) => {
     try {
         let decodedtoken=req.token
         let userId = req.body.userId;
-     if (!mongooseIdcheck(userId)) 
+     if (!mongoose.Types.ObjectId.isValid(userId)) 
      { return res.status(400).send({ status: false, msg: "Enter valid user Id"}); }  
       let user = await userModel.findById(userId);
     if (!user) {
@@ -63,8 +59,7 @@ const authorisationbyBId = async function(req,res,next){
     try {
         let bookId = req.params.bookId
         let decodedtoken=req.token
-
-        if(!mongooseIdcheck(bookId)){
+        if(!mongoose.Types.ObjectId.isValid(bookId)){
            return res.status(400).send({status: false, message: 'Invalid book id'}); }
 
         let bookData = await bookModel.findOne({_id:bookId,isDeleted:false})
@@ -94,15 +89,3 @@ module.exports={authentication,authorisation,authorisationbyBId}
 
 
 
-
-let token = jwt.sign(
-    {
-        userId: user._id.toString(),
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000)+ 10*60*60
-        },
-        "functionUp" 
-        )
-        res.header("x-api-key" , token)
-        res.status(200).send({status:true , msg:"login Success" , data: token })
-}

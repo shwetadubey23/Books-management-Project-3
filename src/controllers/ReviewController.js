@@ -106,9 +106,9 @@ const deleteReview = async function (req, res) {
         if (!checkRview) return res.status(404).send({ status: false, msg: "NO review found" })
         if (checkRview.isDeleted == true) return res.status(404).send({ status: false, msg: "Review already deleted" })
 
-        let decraseReview = await BooksModel.findOneAndUpdate({ _id: bookId }, { $inc: { reviews: -1 } })
+        await BooksModel.findOneAndUpdate({ _id: bookId }, { $inc: { reviews: -1 } })
 
-        let checkData = await ReviewModel.findByIdAndUpdate({ _id: reviewId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true });
+        await ReviewModel.findByIdAndUpdate({ _id: reviewId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true });
         res.status(200).send({ status: true, msg: "Document deleted Successfully" });
 
 
