@@ -17,7 +17,7 @@ const createReview = async function (req, res) {
 
         let reviewData = req.body
         if (Object.keys(reviewData).length == 0) return res.status(400).send({ status: false, msg: "Please give Details in body" })
-
+        if (reviewData.bookId != book_Id) return res.status(400).send({ status: false, msg: "Please give same bookId in Params and body " })
         let { bookId, reviewedBy, reviewedAt, rating } = reviewData
         if (!bookId)
             return res.status(400).send({ status: false, message: "Please enter  BookId" });
@@ -25,6 +25,9 @@ const createReview = async function (req, res) {
         //   return res.status(400).send({ status: false, message: "Please enter  reviewer's Name" });
         if (!reviewedAt)
             return res.status(400).send({ status: false, message: "Please enter  reviewedAt" });
+            if (!(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/).test(reviewedAt))
+            return res.status(400).send({ status: false, message: "Please enter valid reviewedAt Date format('YYYY-MM-DD')" });
+
         if (!rating) {
             return res.status(400).send({ status: false, message: "Please enter  rating" });
         }
@@ -61,16 +64,18 @@ const updateReview = async function (req, res) {
         if (checkBookIdInDb.isDeleted == true)
             return res.status(400).send({ status: false, msg: "No Book found" })
 
-        let checkRview = await ReviewModel.findById({ _id: reviewId })
+        let checkRview = await ReviewModel.findById( reviewId )
         if (!checkRview)
             return res.status(404).send({ status: false, msg: "NO review found" })
-        if (book_Id === checkRview.bookId)
+        if (book_Id != checkRview.bookId)
             return res.status(400).send({ status: false, msg: "bookId not matched to reviewData" })
         if (checkRview.isDeleted == true)
             return res.status(404).send({ status: false, msg: "Review not exist" })
 
         let reviewDetail = req.body
-        let {reviewedBy, rating, review} = reviewDetail
+        let {reviewedBy, rating, review, ...rest} = reviewDetail
+        if (Object.keys(rest) !=0) return res.status(400).send({ status: false, msg: "You can update only- reviewedBy, rating, review" })
+
         if(rating){
         if (!(/^([1-5]|1[5])$/).test(rating))
         return res.status(400).send({ status: false, message: "Please give rating only 1-5 ." })

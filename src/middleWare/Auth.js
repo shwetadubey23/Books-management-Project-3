@@ -4,10 +4,7 @@ const mongoose = require('mongoose')
 const bookModel = require("../models/BooksModel");
 const userModel= require("../models/UserModel")
 
-// const mongooseIdcheck = ()=>{
-//      return mongoose.Types.ObjectId.isValid()
 
-// }
 
 
 // ============================================ AUTHENTICATION ==============================================//
@@ -22,6 +19,7 @@ const authentication = (req, res, next) => {
                 return res.status(401).send({ status: false, msg: "Authentication failed Or Token Expired..!" });
             } else {
                 req.token = decoded;
+                
                 next();
             }
         });
@@ -66,14 +64,16 @@ const authorisationbyBId = async function(req,res,next){
         let decodedtoken=req.token
         // if(!bookId){
         //    return res.status(400).send({status: false, message: "Please enter a book ID."}); }
-        if(mongoose.Types.ObjectId.isValid(bookId)){
+        if(!mongoose.Types.ObjectId.isValid(bookId)){
            return res.status(400).send({status: false, message: 'Invalid book id'}); }
 
-        let bookData = await bookModel.findOne({_id:bookId,isDeleted:false})
-        if(!bookData){
-            return res.status(404).send({status: false, message: 'No Book exists with that id or Might be Deleted'});}
-    
-        if((decodedtoken.userId !== bookData.userId.toString()))
+        let bookData = await bookModel.findById(bookId)
+        if(!bookData)
+            return res.status(404).send({status: false, message: 'No Book exists with that id '});
+            if(bookData.isDeleted == true)
+            return res.status(404).send({status: false, message: 'Book is already Deleted'});
+
+        if((decodedtoken.userId !== bookData.userId))
         { return res.status(403).send({status : false, message : "You are not a authorized user"}) };
           next();
         

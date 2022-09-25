@@ -77,20 +77,21 @@ const getBooks = async function(req, res) {
 }
 
 
-//=====================GetAllBooksById===================================================
+//=====================GetAllBooksById====================================================
 
 const getBooksById = async function (req, res) {
     try {
         let bookId = req.params.bookId
-        // if (!bookId) return res.status(400).send({ status: false, msg: "bookId required in params" })
         if (!ObjectId.isValid(bookId)) return res.status(400).send({ status: false, msg: "Please give a Valid bookId " })
 
-        let allBooks = await BooksModel.findById({ _id: bookId }).lean()//{isDeleted: false}]}).lean()
-        if (allBooks.isDeleted == true)
-            return res.status(404).send({ status: false, msg: "No Books found" })
-        let reviewData = await ReviewModel.findById(bookId)
-        allBooks["reviewsData"] = [reviewData]
-        res.status(200).send({ status: true, data: allBooks })
+        let allBooks = await BooksModel.findById({ _id: bookId })//{isDeleted: false}]}).lean()
+        if(!allBooks || allBooks.isDeleted == true)
+        return res.status(404).send({ status: false, msg: "Book not found" })
+     
+         
+        let reviewData = await ReviewModel.find({bookId: allBooks._id, isDeleted: false})
+        let bookReview = {allBooks, reviewsData: reviewData}
+        res.status(200).send({ status: true, data: bookReview })
     }
     catch (err) {
         res.status(500).send({ status: "error", error: err.message })

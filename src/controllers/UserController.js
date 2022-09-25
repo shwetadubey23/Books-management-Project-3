@@ -60,7 +60,7 @@ const login = async function (req, res) {
     if (!userData)
        return res.status(404).send({ status: false, msg: "No User Found With These Credentials" });
 
-        let exp= "5h"
+        let exp= "6h"
    let token = jwt.sign({ userId: userData._id }, "Book management secret key",{expiresIn: exp})
     
     res.setHeader("x-api-key", token);
