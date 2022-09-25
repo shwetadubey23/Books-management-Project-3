@@ -63,8 +63,7 @@ const authorisationbyBId = async function(req,res,next){
     try {
         let bookId = req.params.bookId
         let decodedtoken=req.token
-        // if(!bookId){
-        //    return res.status(400).send({status: false, message: "Please enter a book ID."}); }
+
         if(!mongooseIdcheck(bookId)){
            return res.status(400).send({status: false, message: 'Invalid book id'}); }
 
@@ -84,3 +83,26 @@ const authorisationbyBId = async function(req,res,next){
 
 // =======================================================================================================//
 module.exports={authentication,authorisation,authorisationbyBId}
+
+
+
+
+
+
+
+
+
+
+
+
+let token = jwt.sign(
+    {
+        userId: user._id.toString(),
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000)+ 10*60*60
+        },
+        "functionUp" 
+        )
+        res.header("x-api-key" , token)
+        res.status(200).send({status:true , msg:"login Success" , data: token })
+}

@@ -1,7 +1,6 @@
 const BooksModel = require('../models/BooksModel')
 const userModel = require('../models/userModel');
 const ObjectId = require('mongoose').Types.ObjectId
-
 const ReviewModel = require('../models/ReviewModel')
 const ReviewController = require('../controllers/ReviewController')
 
@@ -91,14 +90,16 @@ const updateBookById = async function (req, res) {
             return res.status(404).send({ status: false, msg: "book is already deleted" })
 
         let details = req.body
-        if (Object.keys(details.length) == 0) return res.status(400).send({ status: false, msg: "Please give Details in body" })
+        if (Object.keys(details).length == 0) return res.status(400).send({ status: false, msg: "Please give Details in body" })
+        if(details.title || details.title == null){
+        if(!(/^[a-zA-Z]$/.test(details.title))) return res.status(400).send({ status: false, msg: "please update with correct title" })
         let checkDatainDb = await BooksModel.findOne({ title: details.title })
-        if (checkDatainDb) return res.status(400).send({ status: false, msg: "title is already used" })
-        let bookIsbnInDb = await BooksModel.findOne({ ISBN: details.ISBN })
-        if (bookIsbnInDb)
-            return res.status(400).send({ status: false, msg: "ISBN is already used" })
-        if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){})?$)[\d-]+$/).test(details.ISBN))
-            return res.status(400).send({ status: false, message: "Please enter Correct ISBN." })
+        if (checkDatainDb) return res.status(400).send({ status: false, msg: "title is already used" })}
+        // let bookIsbnInDb = await BooksModel.findOne({ ISBN: details.ISBN })
+        // if (bookIsbnInDb)
+        //     return res.status(400).send({ status: false, msg: "ISBN is already used" })
+        // if (!(/^(?=(?:\D*\d){13}(?:(?:\D*\d){})?$)[\d-]+$/).test(details.ISBN))
+        //     return res.status(400).send({ status: false, message: "Please enter Correct ISBN." })
 
         const updatedBook = await BooksModel.findOneAndUpdate({ _id: bookId },
             { $set: { title: details.title, excerpt: details.excerpt, releasedAt: details.releasedAt, ISBN: details.ISBN } },
