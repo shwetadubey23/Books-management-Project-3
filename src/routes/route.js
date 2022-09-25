@@ -1,21 +1,26 @@
 const express = require("express")
 const router = express.Router()
-const UserControler = require('../controllers/UserController')
-const BooksControler = require('../controllers/BooksController')
-const authController = require('../middleware/auth')
-//==================================== Routes =================================================================//
-router.post('/register',UserControler.createUser)
-router.post('/login',UserControler.login)
-router.post('/books',authController.authentication,authController.authorisation,BooksControler.createBooks)
-router.get("/books",authController.authentication,BooksControler.getBookDetails)
-router.get("/books/:bookId",authController.authentication,BooksControler.getBooksById)
-router.delete("/books/:bookId",authController.authentication,authController.authorisationbyBId,BooksControler.BooksDeleteById)
+const UserController = require('../controllers/UserController');
+const BooksController = require('../controllers/BooksController');
+const ReviewController = require('../controllers/ReviewController')
+const middleWare =  require('../middleWare/Auth')
+
+
+router.post('/register',UserController.createUser)
+router.post('/login',UserController.login)
+
+router.post('/books',middleWare.authentication,middleWare.authorisation,BooksController.createBooks)
+router.get('/books',middleWare.authentication,BooksController.getBooks)
+router.get('/books/:bookId',middleWare.authentication,BooksController.getBooksById)
+router.put('/books/:bookId',middleWare.authentication,middleWare.authorisationbyBId,BooksController.updateBookById)
+router.delete('/books/:bookId',middleWare.authentication,middleWare.authorisationbyBId,BooksController.BooksDeleteById)
+
+router.post('/books/:bookId/review',ReviewController.createReview)
+router.put('/books/:bookId/review/:reviewId',ReviewController.updateReview)
+router.delete('/books/:bookId/review/:reviewId',ReviewController.deleteReview)
 
 router.all("/*",(req,res)=>{
     res.status(400).send({status:false,error:"endpoint is not valid"})
 })
 
-
-
-
-module.exports = router;
+module.exports = router

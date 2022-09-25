@@ -1,5 +1,7 @@
-const userModel = require('../models/userModel');
+const userModel = require('../models/UserModel');
 const jwt = require("jsonwebtoken")
+const moment = require('moment')
+
 
 const createUser = async function  (req, res) {
     try {
@@ -34,10 +36,11 @@ const createUser = async function  (req, res) {
         if (findemail.length > 0) return res.status(400).send({ status: false, msg: "email id is already exist" })
 
             let saveData = await userModel.create(data)
-            res.status(200).send({  status: true, msg: saveData  })
+            res.status(201).send({  status: true, msg: saveData  })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message });
     }
+}
 
 //====================================LOGIN======================================================//
 
@@ -55,14 +58,17 @@ const login = async function (req, res) {
     let userData = await userModel.findOne({ email: email, password: password });
 
     if (!userData)
-        return res.status(400).send({ status: false, msg: "No User Found With These Credentials" });
+       return res.status(404).send({ status: false, msg: "No User Found With These Credentials" });
 
-    let token = jwt.sign({ email: userData.email }, "Book management secret key", { expiresIn: "4h" });
-    res.setHeader("secret-key", token);
-    return res.status(200).send({ status: true, data: { token : token} })
-}
-catch{
+        let exp= "5h"
+   let token = jwt.sign({ userId: userData._id }, "Book management secret key",{expiresIn: exp})
     
+    res.setHeader("x-api-key", token);
+    let dataT = {token,userId: userData._id, iat: moment(),exp:exp}
+    return res.status(201).send({ status: true, msg: "login successfull",  data: dataT })
+} catch (error) {
+    res.status(500).send({ status: false, msg: error.message });
+}
 }
 
 module.exports = { createUser, login }
