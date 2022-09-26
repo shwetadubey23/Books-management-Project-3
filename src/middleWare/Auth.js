@@ -63,13 +63,11 @@ const authorisationbyBId = async function(req,res,next){
         if(!mongoose.Types.ObjectId.isValid(bookId)){
            return res.status(400).send({status: false, message: 'Invalid book id'}); }
 
-        let bookData = await bookModel.findById(bookId)
-        if(!bookData)
-            return res.status(404).send({status: false, message: 'No Book exists with that id '});
-            if(bookData.isDeleted == true)
-            return res.status(404).send({status: false, message: 'Book is already Deleted'});
+           let bookData = await bookModel.findOne({_id:bookId,isDeleted:false})
+           if(!bookData){
+               return res.status(404).send({status: false, message: 'No Book exists with that id or Might be Deleted'});}
 
-        if((decodedtoken.userId !== bookData.userId))
+        if((decodedtoken.userId !== bookData.userId.toString()))
         { return res.status(403).send({status : false, message : "You are not a authorized user"}) };
           next();
         
