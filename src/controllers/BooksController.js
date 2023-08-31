@@ -100,10 +100,8 @@ const getBooksById = async function (req, res) {
         if(!allBooks || allBooks.isDeleted == true)
         return res.status(404).send({ status: false, msg: "Book not found" })
      
-         
-        let reviewData = await ReviewModel.find({bookId: allBooks._id, isDeleted: false})
-      
-        res.status(200).send({ status: true, data: allBooks, reviewData })
+          let reviewData = await ReviewModel.find({bookId: allBooks._id, isDeleted: false})
+         res.status(200).send({ status: true, data: allBooks, reviewData })
     }
     catch (err) {
         res.status(500).send({ status: "error", error: err.message })
