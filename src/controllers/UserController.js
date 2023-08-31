@@ -25,21 +25,24 @@ const createUser = async function (req, res) {
 
         if (typeof name !== "string" || !nameValidation)
             return res.status(400).send({ status: false, msg: "please enter a valid name" })
-        if (!validatePhone) return res.status(400).send({ status: false, msg: "Please enter valid Phone Number" })
-        if (!validateEmail) return res.status(400).send({ status: false, msg: "Email is invalid, Please check your Email address" });
-        if (!validatePassword) return res.status(400).send({ status: false, msg: "use a strong password at least =>  one special, one Uppercase, one lowercase (character) one numericValue and password must be eight characters or longer)" });
+        if (!validatePhone) return res.status(400)
+            .send({ status: false, msg: "Please enter valid Phone Number" })
+        if (!validateEmail) return res.status(400)
+            .send({ status: false, msg: "Email is invalid, Please check your Email address" });
+        if (!validatePassword) return res.status(400)
+            .send({ status: false, msg: "use a strong password at least => one special, one Uppercase, one lowercase (character) one numericValue and password must be eight characters or longer)" });
 
         //PhoneNumber and emailId should be unique
         let findData = await userModel.find({ $or: [{ email: email }, { phone: phone }] })
 
-if(findData) {
-        
-        if (findData.email === email) {
-            return res.status(400).send({ status: false, msg: "email id is already exist" })
-        } else {
-            return res.status(400).send({ status: false, msg: "mobile no. is already exist" })
+        if (findData) {
+
+            if (findData.email === email) {
+                return res.status(400).send({ status: false, msg: "email id is already exist" })
+            } else {
+                return res.status(400).send({ status: false, msg: "mobile no. is already exist" })
+            }
         }
-    }
         let saveData = await userModel.create(data)
         res.status(201).send({ status: true, msg: saveData })
     } catch (error) {

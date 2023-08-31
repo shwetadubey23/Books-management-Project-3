@@ -17,23 +17,12 @@ const createBooks = async function (req, res) {
         let data = req.body
         let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data
 
-        if (!(title))
-            return res.status(400).send({ status: false, message: "Please enter  title" });
-        if (!(excerpt))
-            return res.status(400).send({ status: false, message: "Please enter  excerpt" });
-        if (!(userId))
-            return res.status(400).send({ status: false, message: "Please enter  userId" });
-
-        if (!(ISBN))
-            return res.status(400).send({ status: false, message: "Please enter  ISBN" });
-        if (!(category))
-            return res.status(400).send({ status: false, message: "Please enter  category" });
-        if (!(subcategory))
-            return res.status(400).send({ status: false, message: "Please enter  subcategory" });
-        if (!releasedAt) {
-            return res.status(400).send({ status: false, message: "Please enter  releasedAt" });
-        }
-        if (!(/^[a-f\d]{24}$/i).test(userId)) { return res.status(400).send({ status: false, message: "Please enter Correct userId." }) }
+        if (!title || !excerpt || !userId || !ISBN || !category || !subcategory ||  !releasedAt)
+            return res.status(400).send({ status: false,
+         message: "Please enter title, excerpt, userId, ISBN, category, subcategory, releasedAt" });
+       
+        if (!(/^[a-f\d]{24}$/i).test(userId)) 
+        { return res.status(400).send({ status: false, message: "Please enter Correct userId." }) }
         let userData = await userModel.findById(userId);
         if (!userData) return res.status(404).send({ status: false, msg: "UserID not found." });
 
@@ -41,7 +30,8 @@ const createBooks = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please enter Correct ISBN." })
 
         if (!(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/).test(releasedAt))
-            return res.status(400).send({ status: false, message: "Please enter valid releasedAt Date format('YYYY-MM-DD')" });
+            return res.status(400).send({ status: false, 
+        message: "Please enter valid releasedAt Date format('YYYY-MM-DD')" });
 
             if(files && files.length>0){
                 uploadedFileURL= await uploadFile( files[0] )
