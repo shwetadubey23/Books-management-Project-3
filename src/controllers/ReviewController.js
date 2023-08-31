@@ -73,8 +73,8 @@ const updateReview = async function (req, res) {
             return res.status(404).send({ status: false, msg: "Review not exist" })
 
         let reviewDetail = req.body
-        let {reviewedBy, rating, review, ...rest} = reviewDetail
-        if (Object.keys(rest) !=0) return res.status(400).send({ status: false, msg: "You can update only- reviewedBy, rating, review" })
+        let {reviewedBy, rating, review} = reviewDetail
+       // if (Object.keys(rest) !=0) return res.status(400).send({ status: false, msg: "You can update only- reviewedBy, rating, review" })
 
         if(rating){
         if (!(/^([1-5]|1[5])$/).test(rating))

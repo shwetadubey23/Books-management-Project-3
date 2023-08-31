@@ -1,12 +1,16 @@
 const express = require("express")
-const bodyparser = require("body-parser")
 const app = express()
+const multer= require("multer");
+const {AppConfig} = require('aws-sdk');
 const route = require("./routes/route.js")
 const mongoose = require("mongoose")
 
-app.use(bodyparser.json())
-app.use(bodyparser.urlencoded({extended:true}))
-mongoose.connect("mongodb+srv://Deepanshuyadav:DEEPyadav1446@cluster0.f9r26yw.mongodb.net/group-19-Database", {
+
+app.use(multer().any())
+
+app.use(express.json())
+
+mongoose.connect("mongodb+srv://Shwetadubey:QvtqJ8hdhmn0fhlT@cluster0.ymyddly.mongodb.net/Project-3", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
@@ -15,7 +19,7 @@ mongoose.connect("mongodb+srv://Deepanshuyadav:DEEPyadav1446@cluster0.f9r26yw.mo
 
 app.use("/",route)
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log('Express app running on port ' + (process.env.PORT || 3000))
+app.listen(3000, function () {
+    console.log('Express app running on port ' +  3000)
 });
 
